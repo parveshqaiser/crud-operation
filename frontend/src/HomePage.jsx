@@ -236,7 +236,7 @@ const HomePage = () => {
                                 </td>
                             </tr>
                         )) : <tr >
-                            <td colSpan={6} className='text-center'>No user data Available</td>
+                            <td colSpan={6} className='text-center'>No User Data Available</td>
                         </tr>
                     }
                     </tbody>
