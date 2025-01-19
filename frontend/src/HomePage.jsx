@@ -4,6 +4,7 @@ import "./home.css";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import Pagination from 'react-bootstrap/Pagination';
 
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
@@ -54,23 +55,33 @@ const HomePage = () => {
    const [isEdit, setIsEdit] = useState(false);
    const [isDisabled, setIsDisabled] = useState(false); 
 
+   const[currentPage, setCurrentPage] = useState(1);
+   const[totalPage,setTotalPage] = useState(1);
+   const itemsPerPage = 5;
+
    useEffect(()=>{
         getData();
-   },[]);
+   },[currentPage]);
 
    async function getData()
    {
-       try {
-           let res = await axios.get(BASE_URL + "/getUsers", {withCredentials: true});
-           if(res?.data?.success){
-               setTableData(res.data.data || []);
-               setIsLoading(false)
-           }
-       } catch (error) {
-           console.log("error in getting all details ", error);
-           setIsLoading(false)
-       }
-   }
+        try {
+            let res = await axios.get(BASE_URL + "/getUsers", {withCredentials: true, params : {page:currentPage, limit:itemsPerPage}});
+            // console.log(res?.data);
+
+            if(res?.data?.success)
+            {
+                setTableData(res.data.data || []);
+                let itemCount = res?.data?.itemsCount;
+                let noOfPagination = Math.ceil(itemCount/itemsPerPage);
+                setTotalPage(noOfPagination);
+                setIsLoading(false)
+            }    
+        } catch (error) {
+            console.log("error in getting all details ", error);
+            setIsLoading(false)
+        }
+    }
 
     function handleChange(e)
     {
@@ -88,7 +99,7 @@ const HomePage = () => {
         if(name == "age"){
             newValues[name] = {
                 value : value,
-                error : !value ? "Required*" : (value > 0 && value <=19) ? "Age must be above 19" : ""
+                error : !value ? "required*" : (value > 0 && value <=19) ? "Age must be above 19 & must be a digit" : ""
             };
         }
 
@@ -193,6 +204,11 @@ const HomePage = () => {
         }
     }
 
+    function handlePageChange(page)
+    {
+        setCurrentPage(page);
+    }
+
     return(
         <div className='main-box'>
             <Toaster />
@@ -243,6 +259,22 @@ const HomePage = () => {
                 </table>
             </div>
 
+            <div className='mt-4 mb-0 d-flex justify-content-end'>
+                <Pagination>
+                {
+                    Array.from({ length: totalPage }, (_, index) => (
+                    <Pagination.Item
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        active={index + 1 === currentPage}
+                    >
+                        {index + 1}
+                    </Pagination.Item>
+                    ))
+                }                    
+                </Pagination>
+            </div>
+
 
             <Modal show={show} onHide={handleClose} size="lg">
                 <Modal.Header closeButton>
@@ -258,6 +290,7 @@ const HomePage = () => {
                         <Form.Group className="mb-1" >
                             <Form.Label>Age</Form.Label>
                             <Form.Control onChange={handleChange} autoComplete='off' value={formValues.age.value} name='age' type="text"/>
+                            <span className='text-danger fs-6'>{formValues.age.error}</span>
                         </Form.Group>
                         <Form.Group className="mb-1" >
                             <Form.Label>Profession</Form.Label>
