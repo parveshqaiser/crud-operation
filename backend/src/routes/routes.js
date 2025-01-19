@@ -8,13 +8,21 @@ const router = express.Router();
 router.get("/getUsers",async (req, res)=>{
 
     try {
-        let allUsers = await userSchema.find({});
+        let page = req.query.page || 1;
+        let limit = req.query.limit || 5;
+
+        // console.log("*** ", page, limit);
+        let skip = (page -1) * limit;
+        limit = limit> 5 ? 5 : limit;
+
+        let itemsCount = await userSchema.find({});
+        let allUsers = await userSchema.find({}).skip(skip).limit(limit);
 
         if(allUsers.length == []){
             return res.status(200).json({message : "Empty List", success : true, data : []})
         }
 
-        res.status(200).json({data : allUsers, success : true})
+        res.status(200).json({data : allUsers, success : true  , itemsCount : itemsCount.length || 0})
     } catch (error) {
         console.log("*** ", error)
     }
