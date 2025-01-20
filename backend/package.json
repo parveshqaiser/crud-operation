@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "crud-backend",
   "version": "1.0.0",
   "description": "backend for crud op",
   "main": "index.js",
