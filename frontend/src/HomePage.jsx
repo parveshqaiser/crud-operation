@@ -145,7 +145,7 @@ const HomePage = () => {
             return;
         }
 
-        let data = {
+        let createData = {
             name : formValues.name.value,
             age : parseInt(formValues.age.value) || "",
             profession : formValues.profession.value,
@@ -186,7 +186,7 @@ const HomePage = () => {
         } else {
             // add
             try {
-                let res = await axios.post(BASE_URL + "/createUser",data , {withCredentials: true});
+                let res = await axios.post(BASE_URL + "/createUser",createData , {withCredentials: true});
                 if(res.data.success){
                     setIsDisabled(true)
                     toast.success(res.data.message, {duration:2000});
