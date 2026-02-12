@@ -9,7 +9,7 @@ const userRouter= require("./src/routes/routes");
 app.use(express.json());
 
 app.use(cors({
-    origin : "http://localhost:1234",
+    origin : ["http://localhost:1234","http://localhost:63023"],
     credentials : true
 }))
 

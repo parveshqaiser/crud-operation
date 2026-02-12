@@ -24,7 +24,8 @@ router.get("/getUsers",async (req, res)=>{
 
         res.status(200).json({data : allUsers, success : true  , itemsCount : itemsCount.length || 0})
     } catch (error) {
-        console.log("*** ", error)
+        console.log("*** ", error);
+        res.status(500).json({ message: "Server Error", error: error.message, success: false });
     }
 
 });
@@ -36,6 +37,10 @@ router.post("/createUser", async(req, res)=>{
 
         if(!name || !age  || !profession || !state || !city){
             return res.status(400).json({message : "Please Enter All Fields", success:false});
+        };
+
+        if(age <9 || age>99){
+            return res.status(400).json({message : "Age Must be between 9 & 99", success:false});   
         }
 
         let createUser = await userSchema.create({
@@ -54,7 +59,8 @@ router.post("/createUser", async(req, res)=>{
         }
 
     } catch (error) {
-        console.log("error in creating user ", error)
+        console.log("error in creating user ", error);
+        res.status(500).json({ message: "Server Error", error: error.message, success: false });
     }
 });
 
@@ -62,6 +68,11 @@ router.patch("/updateUser", async(req, res)=>{
 
     try {
         let {name,age, profession , state, city, id} = req.body;
+
+        
+        if(age <9 || age>99){
+            return res.status(400).json({message : "Age Must be between 9 & 99", success:false});   
+        }
 
         let findUser = await userSchema.findByIdAndUpdate(id, req.body, {returnDocument:"after"});
 
@@ -80,7 +91,8 @@ router.patch("/updateUser", async(req, res)=>{
         res.status(200).json({message : "User Updated", success : true});
 
     } catch (error) {
-        console.log("error in updating user ", error)
+        console.log("error in updating user ", error);
+        res.status(500).json({ message: "Server Error", error: error.message, success: false });
     }
 });
 
@@ -97,7 +109,8 @@ router.delete("/delete/:id", async(req, res)=>{
         }
        
     } catch (error) {
-        console.log("error in deleting user ", error)
+        console.log("error in deleting user ", error);
+        res.status(500).json({ message: "Server Error", error: error.message, success: false });
     }
 });
 
