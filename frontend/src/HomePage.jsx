@@ -66,7 +66,9 @@ const HomePage = () => {
    async function getData()
    {
         try {
-            let res = await axios.get(BASE_URL + "/getUsers", {withCredentials: true, params : {page:currentPage, limit:itemsPerPage}});
+            let res = await axios.get(BASE_URL + "/getUsers", {
+                withCredentials: true, params : {page:currentPage, limit:itemsPerPage}
+            });
             // console.log(res?.data);
 
             if(res?.data?.success)
@@ -78,7 +80,7 @@ const HomePage = () => {
                 setIsLoading(false)
             }    
         } catch (error) {
-            console.log("error in getting all details ", error);
+            toast.error(error?.response?.data?.message || error?.message, {duration:2000})
             setIsLoading(false)
         }
     }
@@ -116,7 +118,7 @@ const HomePage = () => {
             }
 
         } catch (error) {
-            toast.error(error?.response?.data?.message, {duration:2000});
+           toast.error(error?.response?.data?.message || error?.message, {duration:2000})
             console.log("error in deleting ", error);   
         }
     }
@@ -137,7 +139,6 @@ const HomePage = () => {
 
     async function handleSubmit()
     {
-        console.log("****** ", Object.values(formValues));
         let inputField = Object.values(formValues).every(user => user?.value?.trim() !="");
         if(inputField == false){
             toast.error("All Input Fields Required", {duration:2000})
@@ -159,9 +160,7 @@ const HomePage = () => {
             profession : formValues.profession.value,
             state : formValues.state.value,
             city : formValues.city.value,    
-        }
-
-        console.log(data);
+        };
 
         if(isEdit)
         {
@@ -180,7 +179,8 @@ const HomePage = () => {
                     },2000)
                 };
             } catch (error) {
-                console.log("err in updating ", error)
+                console.log("err in updating ", error);
+                toast.error(error?.response?.data?.message || error?.message, {duration:2000})
             }
 
         } else {
@@ -199,13 +199,12 @@ const HomePage = () => {
                 };
             } catch (error) {
                 console.log("err in submiting ", error);
-                toast.error(error?.response?.data?.message , {duration:2000})
+                toast.error(error?.response?.data?.message || error?.message, {duration:2000})
             }
         }
     }
 
-    function handlePageChange(page)
-    {
+    function handlePageChange(page){
         setCurrentPage(page);
     }
 
